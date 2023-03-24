@@ -1,2 +1,3 @@
-# kwtc-error-monitoring-dotnet-client
+# [WIP] Dotnet client for the error monitoring project
+
 Dotnet client for Kwtc.ErrorMonitoring
