@@ -6,5 +6,6 @@ public class Exception : Dictionary<string, object>
     {
         this.Add("type", exception.GetType().ToString().ToLower());
         this.Add("message", exception.Message);
+        this.Add("trace", new Trace(exception));
     }
 }
