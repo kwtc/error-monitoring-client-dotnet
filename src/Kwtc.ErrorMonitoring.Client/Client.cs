@@ -12,14 +12,14 @@ public class Client : IClient
 
     public Client(IConfiguration configuration)
     {
-        this.apiKey = configuration["Kwtc:ErrorMonitoring:ApiKey"];
+        this.apiKey = configuration["ErrorMonitoring:ApiKey"];
         if (string.IsNullOrEmpty(this.apiKey))
         {
             throw new ErrorMonitoringException(
                 "Kwtc.ErrorMonitoring.ApiKey is not set in configuration. See https://github.com/kwtc/kwtc-error-monitoring-dotnet-client for configuration details.");
         }
 
-        this.url = configuration["Kwtc:ErrorMonitoring:Url"];
+        this.url = configuration["ErrorMonitoring:Url"];
         if (string.IsNullOrEmpty(this.url))
         {
             throw new ErrorMonitoringException(
@@ -32,7 +32,7 @@ public class Client : IClient
         // TODO: Create wrapper object for api key etc.
 
         var errorEvent = new Event(exception, severity, isHandled);
-        var payload = JsonSerializer.Serialize(errorEvent);
-        await this.url.PostJsonAsync(payload, cancellationToken);
+        var payload = JsonSerializer.Serialize(new Report(Guid.NewGuid(), errorEvent));
+        await $"{this.url}/report/notify".PostJsonAsync(payload, cancellationToken);
     }
 }
