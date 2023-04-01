@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 public class Trace : IEnumerable<TraceLine>
 {
-    private readonly System.Exception exception;
+    private readonly System.Exception? exception;
 
     public Trace(System.Exception exception)
     {

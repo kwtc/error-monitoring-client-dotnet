@@ -32,7 +32,9 @@ public class Client : IClient
         // TODO: Create wrapper object for api key etc.
 
         var errorEvent = new Event(exception, severity, isHandled);
-        var payload = JsonSerializer.Serialize(new Report(Guid.NewGuid(), errorEvent));
-        await $"{this.url}/report/notify".PostJsonAsync(payload, cancellationToken);
+        var payload = JsonSerializer.Serialize(new Report(errorEvent));
+        await $"{this.url}/report/notify"
+              .WithHeader("x-api-key", this.apiKey)
+              .PostJsonAsync(payload, cancellationToken);
     }
 }
