@@ -20,11 +20,6 @@ public class Trace : IEnumerable<TraceLine>
         }
 
         var frames = new StackTrace(this.exception, true).GetFrames();
-        if (frames == null)
-        {
-            yield break;
-        }
-
         foreach (var frame in frames)
         {
             yield return new TraceLine(

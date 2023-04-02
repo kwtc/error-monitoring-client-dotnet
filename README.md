@@ -2,7 +2,8 @@
 Dotnet client implementation for posting requests to the [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring) api.
 
 ## WORK IN PROGRESS!
-- [X] Extract info from exception, serialize and send as post request
+- [X] Extract info from exception, serialize and send as report
+- [ ] Limit report size
 - [ ] ASP.NET Core Web API middleware
 
 ## Configuration

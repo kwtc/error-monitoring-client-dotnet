@@ -21,14 +21,18 @@ public class ExceptionCollection : IEnumerable<Exception>
         return this.GetEnumerator();
     }
 
-    private static IEnumerable<System.Exception> FlattenExceptionTree(System.Exception exception)
+    private static IEnumerable<System.Exception> FlattenExceptionTree(System.Exception? exception)
     {
-        var exceptions = new List<System.Exception> { exception };
-        if (exception.InnerException != null)
+        if (exception == null)
         {
-            exceptions.AddRange(FlattenExceptionTree(exception.InnerException));
+            yield break;
         }
+        
+        yield return exception;
 
-        return exceptions;
+        foreach (var innerException in FlattenExceptionTree(exception.InnerException))
+        {
+            yield return innerException;
+        }
     }
 }
