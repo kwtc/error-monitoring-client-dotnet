@@ -2,7 +2,7 @@
 
 using Payload;
 
-public interface IClient
+public interface IApiClient
 {
     Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default);
 }

@@ -5,12 +5,12 @@ using Flurl.Http;
 using Microsoft.Extensions.Configuration;
 using Payload;
 
-public class Client : IClient
+public class ApiClient : IApiClient
 {
     private readonly string? apiKey;
     private readonly string? url;
 
-    public Client(IConfiguration configuration)
+    public ApiClient(IConfiguration configuration)
     {
         this.apiKey = configuration["ErrorMonitoring:ApiKey"];
         if (string.IsNullOrEmpty(this.apiKey))
@@ -29,8 +29,6 @@ public class Client : IClient
 
     public async Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
     {
-        // TODO: Create wrapper object for api key etc.
-
         var errorEvent = new Event(exception, severity, isHandled);
         var payload = JsonSerializer.Serialize(new Report(errorEvent));
         await $"{this.url}/report/notify"
