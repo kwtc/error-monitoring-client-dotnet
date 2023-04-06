@@ -12,6 +12,7 @@ A section is required in `appsettings.json` defining an api key formatted as a G
 ```json
 "ErrorMonitoring": {
     "ApiKey": "6d4780de-2a6e-4b43-9595-4afd592407e3",
+    "AppIdentifier": "Test app",
     "Url": "http://localhost:5114"
 }
 ```
