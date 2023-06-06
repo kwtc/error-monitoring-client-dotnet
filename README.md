@@ -1,4 +1,4 @@
-![example workflow](https://github.com/kwtc/error-monitoring/actions/workflows/dotnet.yml/badge.svg)
+![example workflow](https://github.com/kwtc/error-monitoring-client-dotnet/actions/workflows/dotnet.yml/badge.svg)
 
 # [WIP] Error monitoring - dotnet client
 Dotnet client implementation for posting requests to the [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring) api.
