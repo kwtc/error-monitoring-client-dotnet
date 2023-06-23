@@ -36,7 +36,7 @@ jobs:
       run: dotnet pack -c Release /p:Version=${VERSION} --no-build --output .
 
     # - name: Push package to Nuget.org
-    #   run: dotnet nuget push **\Kwtc.ErrorMonitoring.Client.${VERSION}.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    #   run: dotnet nuget push **\*.${VERSION}.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Push package to Github
-      run: dotnet nuget push **\Kwtc.ErrorMonitoring.Client.${VERSION}.nupkg --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/kwtc/index.json
+      run: dotnet nuget push **\*.${VERSION}.nupkg --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/kwtc/index.json
