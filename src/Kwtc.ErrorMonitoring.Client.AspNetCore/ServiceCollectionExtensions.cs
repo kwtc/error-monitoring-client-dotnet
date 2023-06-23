@@ -1,7 +1,6 @@
-namespace Kwtc.ErrorMonitoring.AspNetCore;
-
-using Client;
 using Microsoft.Extensions.DependencyInjection;
+
+namespace Kwtc.ErrorMonitoring.Client.AspNetCore;
 
 public static class ServiceCollectionExtensions
 {
