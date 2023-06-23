@@ -1,7 +1,7 @@
-namespace Kwtc.ErrorMonitoring.AspNetCore;
-
+using Kwtc.ErrorMonitoring.Client.AspNetCore.Middleware;
 using Microsoft.AspNetCore.Builder;
-using Middleware;
+
+namespace Kwtc.ErrorMonitoring.Client.AspNetCore;
 
 public static class ApplicationBuilderExtensions
 {

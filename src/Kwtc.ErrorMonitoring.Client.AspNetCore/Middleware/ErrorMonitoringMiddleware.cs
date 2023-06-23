@@ -1,22 +1,18 @@
-namespace Kwtc.ErrorMonitoring.AspNetCore.Middleware;
-
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Http;
+
+namespace Kwtc.ErrorMonitoring.Client.AspNetCore.Middleware;
 
 public class ErrorMonitoringMiddleware
 {
     private readonly RequestDelegate next;
-
-    public ErrorMonitoringMiddleware()
-    {
-    }
 
     public ErrorMonitoringMiddleware(RequestDelegate next)
     {
         this.next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, Channel<ExceptionEvent> channel)
     {
         try
         {
@@ -24,7 +20,7 @@ public class ErrorMonitoringMiddleware
         }
         catch (Exception ex)
         {
-            var channel = Channel.CreateUnbounded<Exception>();
+            channel.Writer.TryWrite(new ExceptionEvent(ex));
 
             throw;
         }

@@ -2,9 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Kwtc.ErrorMonitoring.Client</PackageId>
+    <Authors>Kasper Christiansen</Authors>
+    <RepositoryUrl>https://github.com/kwtc/error-monitoring-client-dotnet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kwtc/error-monitoring-client-dotnet</PackageProjectUrl>
+    <Description>.NET client library for Kwtc.ErrorMonitoring.</Description>
+    <PackageTags>Error Exception Reporting Kwtc.ErrorMonitoring</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
