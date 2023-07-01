@@ -1,4 +1,3 @@
-using Kwtc.ErrorMonitoring.Client.AspNetCore.Middleware;
 using Microsoft.AspNetCore.Builder;
 
 namespace Kwtc.ErrorMonitoring.Client.AspNetCore;
