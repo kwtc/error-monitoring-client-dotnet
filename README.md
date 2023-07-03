@@ -1,12 +1,12 @@
 ![.NET build and test](https://github.com/kwtc/error-monitoring-client-dotnet/actions/workflows/ci.yml/badge.svg)
 
 # [WIP] Error monitoring - dotnet client
-Dotnet client implementation for posting requests to the [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring) api.
+Dotnet client for posting requests to the [Kwtc.ErrorMonitoring](https://github.com/kwtc/error-monitoring) api.
 
 ## Features
 - [X] Extract info from exception, serialize and send as report
 - [ ] Limit report size
-- [ ] ASP.NET Core Web API middleware
+- [X] ASP.NET Core Web API middleware
 
 ## Configuration
 A section is required in `appsettings.json` defining an api key and an application id both formatted as a GUID and a URL pointing to the running instance of [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring). See the following example:
@@ -17,5 +17,18 @@ A section is required in `appsettings.json` defining an api key and an applicati
     "ApplicationId": "a8d72dfb-5c97-41a0-961d-b951de367031",
     "Endpoint": "http://localhost:5000/api/v1/"
 }
+```
+
+## Middleware
+To use the ASP.NET middleware simply register the required services and add error monitoring to your application.
+
+```c#
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddErrorMonitoring();
+
+var app = builder.Build();
+app.UseErrorMonitoring();
+
+app.Run();
 ```
 
