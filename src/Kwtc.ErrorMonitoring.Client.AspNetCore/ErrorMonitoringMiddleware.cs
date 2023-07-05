@@ -24,6 +24,7 @@ public class ErrorMonitoringMiddleware
         {
             await channel.Writer.WriteAsync(new ExceptionEvent(ex));
 
+            // TODO: Move send logic to hosted service
             while (await channel.Reader.WaitToReadAsync())
             {
                 while (channel.Reader.TryRead(out var exceptionEvent))

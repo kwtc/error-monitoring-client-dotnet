@@ -6,7 +6,7 @@ Dotnet client for posting requests to the [Kwtc.ErrorMonitoring](https://github.
 ## Features
 - [X] Extract info from exception, serialize and send as report
 - [ ] Limit report size
-- [X] ASP.NET Core Web API middleware
+- [ ] ASP.NET Core Web API middleware
 
 ## Configuration
 A section is required in `appsettings.json` defining an api key and an application id both formatted as a GUID and a URL pointing to the running instance of [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring). See the following example:
@@ -19,7 +19,7 @@ A section is required in `appsettings.json` defining an api key and an applicati
 }
 ```
 
-## Middleware
+## Middleware (Work in progress)
 To use the ASP.NET middleware simply register the required services and add error monitoring to your application.
 
 ```c#
