@@ -1,8 +1,8 @@
-﻿namespace Kwtc.ErrorMonitoring.Client;
+﻿using Kwtc.ErrorMonitoring.Client.Payload;
 
-using Payload;
+namespace Kwtc.ErrorMonitoring.Client;
 
-public interface IApiClient
+public interface IClient
 {
     Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default);
 }

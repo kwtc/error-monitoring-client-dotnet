@@ -1,20 +1,20 @@
-﻿namespace Kwtc.ErrorMonitoring.Client;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using Flurl.Http;
+using Kwtc.ErrorMonitoring.Client.Payload;
 using Microsoft.Extensions.Configuration;
-using Payload;
 
-public class ApiClient : IApiClient
+namespace Kwtc.ErrorMonitoring.Client;
+
+public class Client : IClient
 {
     private readonly string? apiKey;
     private readonly string? applicationId;
     private readonly string? endpoint;
 
-    public ApiClient(IConfiguration configuration)
+    public Client(IConfiguration configuration)
     {
         const string configurationMissingExceptionMessage =
-            "is not set in configuration or is invalid. See https://github.com/kwtc/kwtc-error-monitoring-dotnet-client for configuration details.";
+            $"is not set in configuration or is invalid. See {Constants.ProjectSite} for configuration details.";
 
         this.apiKey = configuration[ConfigurationKeys.ApiKey];
         if (string.IsNullOrEmpty(this.apiKey))

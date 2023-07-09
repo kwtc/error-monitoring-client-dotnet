@@ -1,12 +1,16 @@
 ![.NET build and test](https://github.com/kwtc/error-monitoring-client-dotnet/actions/workflows/ci.yml/badge.svg)
 
-# [WIP] Error monitoring - dotnet client
+# Error monitoring - dotnet client
+
+> **Warning**
+> This is work in progress
+
 Dotnet client for posting requests to the [Kwtc.ErrorMonitoring](https://github.com/kwtc/error-monitoring) api.
 
 ## Features
 - [X] Extract info from exception, serialize and send as report
 - [ ] Limit report size
-- [ ] ASP.NET Core Web API middleware
+- [X] ASP.NET Core Web API middleware
 
 ## Configuration
 A section is required in `appsettings.json` defining an api key and an application id both formatted as a GUID and a URL pointing to the running instance of [Kwtc.ErrorMonitoring](https://github.com/kwtc/kwtc-error-monitoring). See the following example:

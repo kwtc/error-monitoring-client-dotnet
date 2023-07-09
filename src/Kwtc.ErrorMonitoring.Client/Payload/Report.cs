@@ -1,7 +1,7 @@
-namespace Kwtc.ErrorMonitoring.Client.Payload;
-
 using System.Text;
 using Newtonsoft.Json;
+
+namespace Kwtc.ErrorMonitoring.Client.Payload;
 
 public class Report : Dictionary<string, object>
 {
