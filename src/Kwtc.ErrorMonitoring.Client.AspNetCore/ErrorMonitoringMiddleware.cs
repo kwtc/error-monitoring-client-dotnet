@@ -14,7 +14,7 @@ public class ErrorMonitoringMiddleware
         this.next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, Channel<ExceptionEvent> channel, IApiClient client)
+    public async Task InvokeAsync(HttpContext context, Channel<ExceptionEvent> channel, IClient client)
     {
         try
         {

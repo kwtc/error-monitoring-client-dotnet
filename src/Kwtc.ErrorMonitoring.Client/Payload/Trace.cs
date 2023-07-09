@@ -1,7 +1,7 @@
-namespace Kwtc.ErrorMonitoring.Client.Payload;
-
 using System.Collections;
 using System.Diagnostics;
+
+namespace Kwtc.ErrorMonitoring.Client.Payload;
 
 public class Trace : IEnumerable<TraceLine>
 {

@@ -1,6 +1,6 @@
-namespace Kwtc.ErrorMonitoring.Client.Payload;
-
 using System.Collections;
+
+namespace Kwtc.ErrorMonitoring.Client.Payload;
 
 public class ExceptionCollection : IEnumerable<Exception>
 {

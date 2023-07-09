@@ -1,6 +1,6 @@
-namespace Kwtc.ErrorMonitoring.Client.Payload;
-
 using System.ComponentModel;
+
+namespace Kwtc.ErrorMonitoring.Client.Payload;
 
 public enum Severity
 {
