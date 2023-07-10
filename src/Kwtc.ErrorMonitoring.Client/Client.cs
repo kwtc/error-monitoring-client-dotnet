@@ -38,9 +38,8 @@ public class Client : IClient
     public async Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
     {
         var errorEvent = new Event(exception, severity, this.applicationId!, isHandled);
-        var payload = JsonSerializer.Serialize(errorEvent);
         await $"{this.endpoint}/events"
               .WithHeader("x-api-key", this.apiKey)
-              .PostJsonAsync(payload, cancellationToken);
+              .PostJsonAsync(errorEvent, cancellationToken);
     }
 }
