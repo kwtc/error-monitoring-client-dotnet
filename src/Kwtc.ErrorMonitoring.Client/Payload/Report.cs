@@ -1,5 +1,5 @@
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Kwtc.ErrorMonitoring.Client.Payload;
 
@@ -21,7 +21,7 @@ public class Report : Dictionary<string, object>
         byte[] data;
         try
         {
-            data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this));
+            data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(this));
             if (data.Length > MaximumSize)
             {
             }
