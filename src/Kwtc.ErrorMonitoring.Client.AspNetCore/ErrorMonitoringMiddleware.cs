@@ -1,20 +1,20 @@
 using System.Threading.Channels;
-using Kwtc.ErrorMonitoring.Client.Payload;
 using Microsoft.AspNetCore.Http;
-using Exception = System.Exception;
 
 namespace Kwtc.ErrorMonitoring.Client.AspNetCore;
 
 public class ErrorMonitoringMiddleware
 {
     private readonly RequestDelegate next;
+    private readonly Channel<ExceptionEvent> channel;
 
-    public ErrorMonitoringMiddleware(RequestDelegate next)
+    public ErrorMonitoringMiddleware(RequestDelegate next, Channel<ExceptionEvent> channel)
     {
         this.next = next;
+        this.channel = channel;
     }
 
-    public async Task InvokeAsync(HttpContext context, Channel<ExceptionEvent> channel, IClient client)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
@@ -22,16 +22,7 @@ public class ErrorMonitoringMiddleware
         }
         catch (Exception ex)
         {
-            await channel.Writer.WriteAsync(new ExceptionEvent(ex));
-
-            // TODO: Move send logic to hosted service
-            while (await channel.Reader.WaitToReadAsync())
-            {
-                while (channel.Reader.TryRead(out var exceptionEvent))
-                {
-                    await client.NotifyAsync(exceptionEvent.Exception, Severity.Error);
-                }
-            }
+            await this.channel.Writer.WriteAsync(new ExceptionEvent(ex));
 
             throw;
         }

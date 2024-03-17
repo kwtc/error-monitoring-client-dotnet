@@ -6,8 +6,6 @@ public static class ApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseErrorMonitoring(this IApplicationBuilder app)
     {
-        app.UseMiddleware<ErrorMonitoringMiddleware>();
-
-        return app;
+        return app.UseMiddleware<ErrorMonitoringMiddleware>();
     }
 }
