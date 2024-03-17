@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Flurl.Http;
+﻿using Flurl.Http;
 using Kwtc.ErrorMonitoring.Client.Payload;
 using Microsoft.Extensions.Configuration;
 
@@ -40,6 +39,6 @@ public class Client : IClient
         var errorEvent = new Event(exception, severity, this.applicationId!, isHandled);
         await $"{this.endpoint}/events"
               .WithHeader("x-api-key", this.apiKey)
-              .PostJsonAsync(errorEvent, cancellationToken);
+              .PostJsonAsync(errorEvent, cancellationToken: cancellationToken);
     }
 }
