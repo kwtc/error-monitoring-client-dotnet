@@ -1,6 +1,6 @@
 ![.NET build and test](https://github.com/kwtc/error-monitoring-client-dotnet/actions/workflows/ci.yml/badge.svg)
 
-# Error monitoring - dotnet client
+# [WIP] Error monitoring - dotnet client
 
 > **Warning**
 > This is work in progress
@@ -18,12 +18,12 @@ A section is required in `appsettings.json` defining an api key and an applicati
 ```json
 "ErrorMonitoring": {
     "ApiKey": "6d4780de-2a6e-4b43-9595-4afd592407e3",
-    "ApplicationId": "a8d72dfb-5c97-41a0-961d-b951de367031",
-    "Endpoint": "http://localhost:5000/api/v1/"
+    "ApplicationKey": "a8d72dfb-5c97-41a0-961d-b951de367031",
+    "EndpointUri": "http://localhost:5000/api/v1/"
 }
 ```
 
-## Middleware (Work in progress)
+## Middleware
 To use the ASP.NET middleware simply register the required services and add error monitoring to your application.
 
 ```c#
