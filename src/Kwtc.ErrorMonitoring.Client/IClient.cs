@@ -4,5 +4,5 @@ namespace Kwtc.ErrorMonitoring.Client;
 
 public interface IClient
 {
-    Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default);
+    Task<HttpResponseMessage> NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default);
 }

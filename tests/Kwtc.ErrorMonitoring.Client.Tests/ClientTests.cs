@@ -43,7 +43,9 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.ApiKey));
     }
 
     [Theory]
@@ -69,7 +71,9 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.ApiKey));
     }
 
     [Fact]
@@ -89,9 +93,11 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.ApplicationKey));
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -115,9 +121,11 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.ApplicationKey));
     }
-    
+
     [Fact]
     public void Client_ConfigurationMissingEndpoint_ShouldThrow()
     {
@@ -135,9 +143,11 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -161,6 +171,8 @@ public class ClientTests
 
 
         // Assert
-        act.Should().Throw<ErrorMonitoringException>();
+        act.Should()
+           .Throw<ErrorMonitoringException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
     }
 }

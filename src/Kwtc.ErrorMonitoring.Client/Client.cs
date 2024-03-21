@@ -12,33 +12,47 @@ public class Client : IClient
 
     public Client(IConfiguration configuration)
     {
+        this.apiKey = configuration[ConfigurationKeys.ApiKey];
+        this.applicationKey = configuration[ConfigurationKeys.ApplicationKey];
+        this.endpointUri = configuration[ConfigurationKeys.EndpointUri] + "/events";
+
+        this.ValidateConfiguration();
+    }
+
+    public async Task<HttpResponseMessage> NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
+    {
+        var errorEvent = new Event(exception, severity, this.applicationKey!, isHandled);
+
+        try
+        {
+            return (await this.endpointUri
+                              .WithHeader("x-api-key", this.apiKey)
+                              .PostJsonAsync(errorEvent, cancellationToken: cancellationToken)).ResponseMessage;
+        }
+        catch (FlurlHttpException ex)
+        {
+            throw new ErrorMonitoringException(ex.Message, ex);
+        }
+    }
+
+    private void ValidateConfiguration()
+    {
         const string configurationMissingExceptionMessage =
             $"is not set in configuration or is invalid. See {Constants.ProjectSite} for configuration details.";
 
-        this.apiKey = configuration[ConfigurationKeys.ApiKey];
         if (string.IsNullOrEmpty(this.apiKey) || !Guid.TryParse(this.apiKey, out _))
         {
             throw new ErrorMonitoringException($"{ConfigurationKeys.ApiKey} {configurationMissingExceptionMessage}");
         }
 
-        this.applicationKey = configuration[ConfigurationKeys.ApplicationKey];
         if (string.IsNullOrEmpty(this.applicationKey) || !Guid.TryParse(this.applicationKey, out _))
         {
             throw new ErrorMonitoringException($"{ConfigurationKeys.ApplicationKey} {configurationMissingExceptionMessage}");
         }
 
-        this.endpointUri = configuration[ConfigurationKeys.EndpointUri];
         if (string.IsNullOrEmpty(this.endpointUri) || !Uri.IsWellFormedUriString(this.endpointUri, UriKind.Absolute))
         {
             throw new ErrorMonitoringException($"{ConfigurationKeys.EndpointUri} {configurationMissingExceptionMessage}");
         }
-    }
-
-    public async Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
-    {
-        var errorEvent = new Event(exception, severity, this.applicationKey!, isHandled);
-        await $"{this.endpointUri}/events"
-              .WithHeader("x-api-key", this.apiKey)
-              .PostJsonAsync(errorEvent, cancellationToken: cancellationToken);
     }
 }
