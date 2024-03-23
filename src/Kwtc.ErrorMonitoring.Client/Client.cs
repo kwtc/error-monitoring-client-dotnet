@@ -1,44 +1,41 @@
-﻿using Flurl.Http;
+﻿using System.Net.Http.Json;
+using CommunityToolkit.Diagnostics;
+using FluentValidation;
 using Kwtc.ErrorMonitoring.Client.Payload;
+using Kwtc.ErrorMonitoring.Client.Validation;
 using Microsoft.Extensions.Configuration;
+using Severity = Kwtc.ErrorMonitoring.Client.Payload.Severity;
 
 namespace Kwtc.ErrorMonitoring.Client;
 
 public class Client : IClient
 {
-    private readonly string? apiKey;
-    private readonly string? applicationKey;
-    private readonly string? endpointUri;
+    private readonly IHttpClientFactory httpClientFactory;
+    private readonly string applicationKey;
+    private readonly string endpointUri;
 
-    public Client(IConfiguration configuration)
+    public Client(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
-        const string configurationMissingExceptionMessage =
-            $"is not set in configuration or is invalid. See {Constants.ProjectSite} for configuration details.";
+        this.httpClientFactory = httpClientFactory;
 
-        this.apiKey = configuration[ConfigurationKeys.ApiKey];
-        if (string.IsNullOrEmpty(this.apiKey) || !Guid.TryParse(this.apiKey, out _))
-        {
-            throw new ErrorMonitoringException($"{ConfigurationKeys.ApiKey} {configurationMissingExceptionMessage}");
-        }
+        new ClientConfigurationValidator().ValidateAndThrow(configuration);
 
-        this.applicationKey = configuration[ConfigurationKeys.ApplicationKey];
-        if (string.IsNullOrEmpty(this.applicationKey) || !Guid.TryParse(this.applicationKey, out _))
-        {
-            throw new ErrorMonitoringException($"{ConfigurationKeys.ApplicationKey} {configurationMissingExceptionMessage}");
-        }
-
-        this.endpointUri = configuration[ConfigurationKeys.EndpointUri];
-        if (string.IsNullOrEmpty(this.endpointUri) || !Uri.IsWellFormedUriString(this.endpointUri, UriKind.Absolute))
-        {
-            throw new ErrorMonitoringException($"{ConfigurationKeys.EndpointUri} {configurationMissingExceptionMessage}");
-        }
+        this.applicationKey = configuration[ConfigurationKeys.ApplicationKey]!;
+        this.endpointUri = configuration[ConfigurationKeys.EndpointUri]!;
     }
 
-    public async Task NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
+    public async Task<ClientResponse> NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
     {
+        Guard.IsNotNull(exception, nameof(exception));
+        Guard.IsGreaterThan((int)severity, 1, nameof(severity));
+
         var errorEvent = new Event(exception, severity, this.applicationKey!, isHandled);
-        await $"{this.endpointUri}/events"
-              .WithHeader("x-api-key", this.apiKey)
-              .PostJsonAsync(errorEvent, cancellationToken: cancellationToken);
+
+        var client = this.httpClientFactory.CreateClient("ErrorMonitoringClient");
+
+        var response = await client
+            .PostAsJsonAsync($"{this.endpointUri}/events", errorEvent, cancellationToken: cancellationToken);
+
+        return new ClientResponse((int)response.StatusCode, response.ReasonPhrase);
     }
 }
