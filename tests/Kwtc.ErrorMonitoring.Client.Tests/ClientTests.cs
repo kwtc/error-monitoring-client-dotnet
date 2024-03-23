@@ -1,10 +1,14 @@
 using FluentAssertions;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
+using Moq;
 
 namespace Kwtc.ErrorMonitoring.Client.Tests;
 
 public class ClientTests
 {
+    private readonly Mock<IHttpClientFactory> httpClientFactoryMock = new();
+
     [Fact]
     public void Client_ValidConfiguration_ShouldNotThrow()
     {
@@ -19,7 +23,7 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
@@ -39,12 +43,12 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.ApiKey));
     }
 
@@ -67,12 +71,12 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.ApiKey));
     }
 
@@ -89,12 +93,12 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.ApplicationKey));
     }
 
@@ -117,12 +121,12 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.ApplicationKey));
     }
 
@@ -139,12 +143,12 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
     }
 
@@ -167,12 +171,17 @@ public class ClientTests
                             .Build();
 
         // Act
-        var act = () => new Client(configuration);
+        var act = () => this.GetSut(configuration);
 
 
         // Assert
         act.Should()
-           .Throw<ErrorMonitoringException>()
+           .Throw<ValidationException>()
            .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
+    }
+
+    private Client GetSut(IConfiguration configuration)
+    {
+        return new Client(configuration, this.httpClientFactoryMock.Object);
     }
 }
