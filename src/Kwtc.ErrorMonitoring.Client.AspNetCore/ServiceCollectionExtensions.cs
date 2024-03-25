@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddErrorMonitoring(this IServiceCollection services, IConfiguration configuration)
     {
-        new ErrorMonitoringConfigurationValidator().ValidateAndThrow(configuration);
+        new AddErrorMonitoringValidator().ValidateAndThrow(configuration);
 
         if (!int.TryParse(configuration[ConfigurationKeys.ChannelCapasity], out var capasity))
         {

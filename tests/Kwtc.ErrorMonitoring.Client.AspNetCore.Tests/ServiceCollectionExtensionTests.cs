@@ -1,17 +1,21 @@
 using FluentAssertions;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Kwtc.ErrorMonitoring.Client.Tests;
 
-public class ClientTests
+namespace Kwtc.ErrorMonitoring.Client.AspNetCore.Tests;
+
+public class ServiceCollectionExtensionTests
 {
-    private readonly Mock<IHttpClientFactory> httpClientFactoryMock = new();
+    [Fact]
+    public void AddErrorMonitoring_InvalidInput_ShouldThrow()
+    {
+    }
 
     [Fact]
-    public void Client_ValidConfiguration_ShouldNotThrow()
+    public void AddErrorMonitoring_ValidConfiguration_ShouldNotThrow()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -20,20 +24,22 @@ public class ClientTests
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.EndpointUri, "http://localhost" },
-                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" },
+                                { ConfigurationKeys.ChannelCapasity, "100" }
                             }!)
                             .Build();
 
-        // Act
-        var act = () => this.GetSut(configuration);
+        var sut = GetSut();
 
+        // Act
+        var act = () => sut.AddErrorMonitoring(configuration);
 
         // Assert
         act.Should().NotThrow();
     }
 
     [Fact]
-    public void Client_MissingApiKey_ShouldThrow()
+    public void AddErrorMonitoring_MissingApiKey_ShouldThrow()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -45,8 +51,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -61,7 +69,7 @@ public class ClientTests
     [InlineData("InvalidApiKey")]
     [InlineData("76d4780de2a6e4b4395954afd592407e3")]
     [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3-1234")]
-    public void Client_InvalidApiKeyConfiguration_ShouldThrow(string apiKey)
+    public void AddErrorMonitoring_InvalidApiKeyConfiguration_ShouldThrow(string apiKey)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -74,8 +82,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -87,7 +97,7 @@ public class ClientTests
     [Theory]
     [InlineData("6d4780de2a6e4b4395954afd592407e3")]
     [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3")]
-    public void Client_ValidApiKeyConfiguration_ShouldNotThrow(string apiKey)
+    public void AddErrorMonitoring_ValidApiKeyConfiguration_ShouldNotThrow(string apiKey)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -100,8 +110,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -110,7 +122,7 @@ public class ClientTests
     }
 
     [Fact]
-    public void Client_MissingApplicationKey_ShouldThrow()
+    public void AddErrorMonitoring_MissingApplicationKey_ShouldThrow()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -122,8 +134,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -138,7 +152,7 @@ public class ClientTests
     [InlineData("InvalidApplicationKey")]
     [InlineData("76d4780de2a6e4b4395954afd592407e3")]
     [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3-1234")]
-    public void Client_InvalidApplicationKeyConfiguration_ShouldThrow(string applicationKey)
+    public void AddErrorMonitoring_InvalidApplicationKeyConfiguration_ShouldThrow(string applicationKey)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -151,8 +165,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -164,7 +180,7 @@ public class ClientTests
     [Theory]
     [InlineData("6d4780de2a6e4b4395954afd592407e3")]
     [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3")]
-    public void Client_ValidApplicationKeyConfiguration_ShouldNotThrow(string applicationKey)
+    public void AddErrorMonitoring_ValidApplicationKeyConfiguration_ShouldNotThrow(string applicationKey)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -177,8 +193,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -187,7 +205,7 @@ public class ClientTests
     }
 
     [Fact]
-    public void Client_ConfigurationMissingEndpoint_ShouldThrow()
+    public void AddErrorMonitoring_ConfigurationMissingEndpoint_ShouldThrow()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -199,8 +217,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -209,35 +229,6 @@ public class ClientTests
            .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("InvalidEndpointUri")]
-    [InlineData("http:/localhost")]
-    [InlineData("/localhost")]
-    public void Client_InvalidEndpointUriConfiguration_ShouldThrow(string endpointUri)
-    {
-        // Arrange
-        var configuration = new ConfigurationBuilder()
-                            .AddInMemoryCollection(new Dictionary<string, string>
-                            {
-                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, endpointUri },
-                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
-                            }!)
-                            .Build();
-
-        // Act
-        var act = () => this.GetSut(configuration);
-
-
-        // Assert
-        act.Should()
-           .Throw<ValidationException>()
-           .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
-    }
-    
     [Theory]
     [InlineData("http://localhost")]
     [InlineData("http://localhost:3000")]
@@ -246,7 +237,7 @@ public class ClientTests
     [InlineData("http://www.localhost.com:3000")]
     [InlineData("localhost:3000")]
     [InlineData("www.localhost.com:3000")]
-    public void Client_ValidEndpointUriConfiguration_ShouldNotThrow(string endpointUri)
+    public void AddErrorMonitoring_ValidEndpointUriConfiguration_ShouldNotThrow(string endpointUri)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -259,8 +250,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -269,7 +262,7 @@ public class ClientTests
     }
 
     [Fact]
-    public void Client_ConfigurationHttpClientNameProvidedButInvalid_ShouldThrow()
+    public void AddErrorMonitoring_ConfigurationHttpClientNameProvidedButInvalid_ShouldThrow()
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -282,8 +275,10 @@ public class ClientTests
                             }!)
                             .Build();
 
+        var sut = GetSut();
+
         // Act
-        var act = () => this.GetSut(configuration);
+        var act = () => sut.AddErrorMonitoring(configuration);
 
 
         // Assert
@@ -292,8 +287,62 @@ public class ClientTests
            .Where(e => e.Message.Contains(ConfigurationKeys.HttpClientName));
     }
 
-    private Client GetSut(IConfiguration configuration)
+    [Theory]
+    [InlineData("")]
+    [InlineData("0")]
+    [InlineData("-1")]
+    [InlineData("InvalidChannelCapasity")]
+    public void AddErrorMonitoring_ConfigurationChannelCapasityProvidedButInvalid_ShouldThrow(string channelCapasity)
     {
-        return new Client(configuration, this.httpClientFactoryMock.Object);
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidHttpClientName" },
+                                { ConfigurationKeys.ChannelCapasity, channelCapasity }
+                            }!).Build();
+
+        var sut = GetSut();
+
+        // Act
+        var act = () => sut.AddErrorMonitoring(configuration);
+
+
+        // Assert
+        act.Should()
+           .Throw<ValidationException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.ChannelCapasity));
     }
+    
+    [Theory]
+    [InlineData("1")]
+    [InlineData("1000")]
+    public void AddErrorMonitoring_ConfigurationChannelCapasityProvidedAndValid_ShouldNotThrow(string channelCapasity)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidHttpClientName" },
+                                { ConfigurationKeys.ChannelCapasity, channelCapasity }
+                            }!).Build();
+
+        var sut = GetSut();
+
+        // Act
+        var act = () => sut.AddErrorMonitoring(configuration);
+
+
+        // Assert
+        act.Should()
+           .NotThrow();
+    }
+
+    private static ServiceCollection GetSut() => [];
 }

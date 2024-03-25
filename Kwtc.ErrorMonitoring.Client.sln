@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3409708B-478
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B1023B70-3219-40B9-87B7-AF9A1D43D559}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kwtc.ErrorMonitoring.Client.AspNetCore.Tests", "tests\Kwtc.ErrorMonitoring.Client.AspNetCore.Tests\Kwtc.ErrorMonitoring.Client.AspNetCore.Tests.csproj", "{0EA29E8C-F19E-49E6-B19F-B546297BED1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,7 @@ Global
 		{726D97CD-DF73-4A42-B468-04448BA5BDBA} = {B1023B70-3219-40B9-87B7-AF9A1D43D559}
 		{87DEE144-936B-43BA-8833-8B1C6B20965D} = {3409708B-478E-416B-8B5C-97B44412162F}
 		{582108C6-44E5-4688-BB0B-C396235CAC43} = {3409708B-478E-416B-8B5C-97B44412162F}
+		{0EA29E8C-F19E-49E6-B19F-B546297BED1A} = {B1023B70-3219-40B9-87B7-AF9A1D43D559}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{87DEE144-936B-43BA-8833-8B1C6B20965D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -39,5 +42,9 @@ Global
 		{726D97CD-DF73-4A42-B468-04448BA5BDBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{726D97CD-DF73-4A42-B468-04448BA5BDBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{726D97CD-DF73-4A42-B468-04448BA5BDBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EA29E8C-F19E-49E6-B19F-B546297BED1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EA29E8C-F19E-49E6-B19F-B546297BED1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EA29E8C-F19E-49E6-B19F-B546297BED1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EA29E8C-F19E-49E6-B19F-B546297BED1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
