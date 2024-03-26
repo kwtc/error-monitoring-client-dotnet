@@ -300,7 +300,7 @@ public class ClientTests
         var configuration = GetValidConfiguration();
 
         // Act
-        var act = () => this.GetSut(configuration).NotifyAsync(null, Severity.Error);
+        var act = () => this.GetSut(configuration).NotifyAsync(null!, Severity.Error);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>();
