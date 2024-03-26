@@ -13,6 +13,7 @@ public class Client : IClient
     private readonly IHttpClientFactory httpClientFactory;
     private readonly string applicationKey;
     private readonly string endpointUri;
+    private readonly string httpClientName;
 
     public Client(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
@@ -22,6 +23,7 @@ public class Client : IClient
 
         this.applicationKey = configuration[ConfigurationKeys.ApplicationKey]!;
         this.endpointUri = configuration[ConfigurationKeys.EndpointUri]!;
+        this.httpClientName = configuration[ConfigurationKeys.HttpClientName] ?? Constants.DefaultHttpClientName;
     }
 
     public async Task<ClientResponse> NotifyAsync(System.Exception exception, Severity severity, bool isHandled = false, CancellationToken cancellationToken = default)
@@ -29,9 +31,9 @@ public class Client : IClient
         Guard.IsNotNull(exception, nameof(exception));
         Guard.IsGreaterThan((int)severity, 1, nameof(severity));
 
-        var errorEvent = new Event(exception, severity, this.applicationKey!, isHandled);
+        var errorEvent = new Event(exception, severity, this.applicationKey, isHandled);
 
-        var client = this.httpClientFactory.CreateClient("ErrorMonitoringClient");
+        var client = this.httpClientFactory.CreateClient(this.httpClientName);
 
         var response = await client
             .PostAsJsonAsync($"{this.endpointUri}/events", errorEvent, cancellationToken: cancellationToken);
