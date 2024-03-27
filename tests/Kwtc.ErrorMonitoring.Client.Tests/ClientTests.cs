@@ -328,12 +328,10 @@ public class ClientTests
             .Returns(new HttpClient());
 
         // Act
-        var response = await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+        await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
 
         // Assert
         this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
-
-        response.Should().NotBeNull();
     }
 
     private Client GetSut(IConfiguration configuration)
