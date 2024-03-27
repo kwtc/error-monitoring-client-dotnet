@@ -334,10 +334,13 @@ public class ClientTests
             .Returns(new HttpClient(httpMessageHandler.Object));
 
         // Act
-        await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+        var response = await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
 
         // Assert
         this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(200);
+        response.Message.Should().Be("OK");
     }
 
     private Client GetSut(IConfiguration configuration)
