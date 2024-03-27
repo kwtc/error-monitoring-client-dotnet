@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Moq.Protected;
 using Xunit;
 using Exception = System.Exception;
 using Severity = Kwtc.ErrorMonitoring.Client.Payload.Severity;
@@ -324,8 +325,13 @@ public class ClientTests
     {
         // Arrange
         var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage());
         this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
-            .Returns(new HttpClient());
+            .Returns(new HttpClient(httpMessageHandler.Object));
 
         // Act
         await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
