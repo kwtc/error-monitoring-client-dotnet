@@ -2,6 +2,10 @@ using FluentAssertions;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Moq.Protected;
+using Xunit;
+using Exception = System.Exception;
+using Severity = Kwtc.ErrorMonitoring.Client.Payload.Severity;
 
 namespace Kwtc.ErrorMonitoring.Client.Tests;
 
@@ -18,7 +22,8 @@ public class ClientTests
                             {
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, "http://localhost" }
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -38,7 +43,8 @@ public class ClientTests
                             .AddInMemoryCollection(new Dictionary<string, string>
                             {
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, "http://localhost" }
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -66,7 +72,8 @@ public class ClientTests
                             {
                                 { ConfigurationKeys.ApiKey, apiKey },
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, "http://localhost" }
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -80,6 +87,31 @@ public class ClientTests
            .Where(e => e.Message.Contains(ConfigurationKeys.ApiKey));
     }
 
+    [Theory]
+    [InlineData("6d4780de2a6e4b4395954afd592407e3")]
+    [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3")]
+    public void Client_ValidApiKeyConfiguration_ShouldNotThrow(string apiKey)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, apiKey },
+                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
+                            }!)
+                            .Build();
+
+        // Act
+        var act = () => this.GetSut(configuration);
+
+
+        // Assert
+        act.Should()
+           .NotThrow();
+    }
+
     [Fact]
     public void Client_MissingApplicationKey_ShouldThrow()
     {
@@ -88,7 +120,8 @@ public class ClientTests
                             .AddInMemoryCollection(new Dictionary<string, string>
                             {
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, "http://localhost" }
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -116,7 +149,8 @@ public class ClientTests
                             {
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.ApplicationKey, applicationKey },
-                                { ConfigurationKeys.EndpointUri, "http://localhost" }
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -130,6 +164,31 @@ public class ClientTests
            .Where(e => e.Message.Contains(ConfigurationKeys.ApplicationKey));
     }
 
+    [Theory]
+    [InlineData("6d4780de2a6e4b4395954afd592407e3")]
+    [InlineData("6d4780de-2a6e-4b43-9595-4afd592407e3")]
+    public void Client_ValidApplicationKeyConfiguration_ShouldNotThrow(string applicationKey)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.ApplicationKey, applicationKey },
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
+                            }!)
+                            .Build();
+
+        // Act
+        var act = () => this.GetSut(configuration);
+
+
+        // Assert
+        act.Should()
+           .NotThrow();
+    }
+
     [Fact]
     public void Client_ConfigurationMissingEndpoint_ShouldThrow()
     {
@@ -139,6 +198,7 @@ public class ClientTests
                             {
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -166,7 +226,8 @@ public class ClientTests
                             {
                                 { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
                                 { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
-                                { ConfigurationKeys.EndpointUri, endpointUri }
+                                { ConfigurationKeys.EndpointUri, endpointUri },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
                             }!)
                             .Build();
 
@@ -180,8 +241,211 @@ public class ClientTests
            .Where(e => e.Message.Contains(ConfigurationKeys.EndpointUri));
     }
 
+    [Theory]
+    [InlineData("http://localhost")]
+    [InlineData("http://localhost:3000")]
+    [InlineData("http://localhost.com")]
+    [InlineData("http://www.localhost.com")]
+    [InlineData("http://www.localhost.com:3000")]
+    [InlineData("localhost:3000")]
+    [InlineData("www.localhost.com:3000")]
+    public void Client_ValidEndpointUriConfiguration_ShouldNotThrow(string endpointUri)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.EndpointUri, endpointUri },
+                                { ConfigurationKeys.HttpClientName, "ValidClientName" }
+                            }!)
+                            .Build();
+
+        // Act
+        var act = () => this.GetSut(configuration);
+
+        // Assert
+        act.Should()
+           .NotThrow();
+    }
+
+    [Fact]
+    public void Client_ConfigurationHttpClientNameProvidedButInvalid_ShouldThrow()
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>
+                            {
+                                { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                                { ConfigurationKeys.EndpointUri, "http://localhost" },
+                                { ConfigurationKeys.HttpClientName, string.Empty }
+                            }!)
+                            .Build();
+
+        // Act
+        var act = () => this.GetSut(configuration);
+
+
+        // Assert
+        act.Should()
+           .Throw<ValidationException>()
+           .Where(e => e.Message.Contains(ConfigurationKeys.HttpClientName));
+    }
+
+    [Fact]
+    public async Task NotifyAsync_ExceptionIsNull_ShouldThrow()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(null!, Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task NotifyAsync_SeverityIsInvalid_ShouldThrow()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), 0);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task NotifyAsync_ConfigurationAndInputValid_ShouldCreateClientAndPostSuccessfully()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage());
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var response = await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(200);
+        response.Message.Should().Be("OK");
+    }
+
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsInvalidOperationException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<InvalidOperationException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is InvalidOperationException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsHttpRequestException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<HttpRequestException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is HttpRequestException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+    
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsTaskCanceledException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<TaskCanceledException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is TaskCanceledException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+    
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsUriFormatException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<UriFormatException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is UriFormatException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+
     private Client GetSut(IConfiguration configuration)
     {
         return new Client(configuration, this.httpClientFactoryMock.Object);
+    }
+
+    private static IConfiguration GetValidConfiguration()
+    {
+        return new ConfigurationBuilder()
+               .AddInMemoryCollection(new Dictionary<string, string>
+               {
+                   { ConfigurationKeys.ApiKey, Guid.NewGuid().ToString() },
+                   { ConfigurationKeys.ApplicationKey, Guid.NewGuid().ToString() },
+                   { ConfigurationKeys.EndpointUri, "http://localhost" },
+                   { ConfigurationKeys.HttpClientName, "ValidClientName" }
+               }!)
+               .Build();
     }
 }

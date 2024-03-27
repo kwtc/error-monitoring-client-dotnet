@@ -1,14 +1,14 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Configuration;
 
-namespace Kwtc.ErrorMonitoring.Client.Validation;
+namespace Kwtc.ErrorMonitoring.Client.AspNetCore.Validation;
 
 /// <summary>
-/// Validator for configuration required by the client.
+/// Validator for configuration required by the Error Monitoring client and event service.
 /// </summary>
-public class ClientConfigurationValidator : AbstractValidator<IConfiguration>
+public class AddErrorMonitoringValidator : AbstractValidator<IConfiguration>
 {
-    public ClientConfigurationValidator()
+    public AddErrorMonitoringValidator()
     {
         // Required configuration keys
         this.RuleFor(x => x[ConfigurationKeys.ApiKey])
@@ -32,7 +32,12 @@ public class ClientConfigurationValidator : AbstractValidator<IConfiguration>
         // Optional configuration keys
         this.RuleFor(x => x[ConfigurationKeys.HttpClientName])
             .NotEmpty()
-            .WithMessage(ConfigurationKeys.HttpClientName + " input is invalid.")
+            .WithMessage(ConfigurationKeys.HttpClientName + " is required.")
             .When(x => x[ConfigurationKeys.HttpClientName] != null);
+        
+        this.RuleFor(x => x[ConfigurationKeys.ChannelCapasity])
+            .Must(x => int.TryParse(x, out _) && int.Parse(x) > 0)
+            .WithMessage(ConfigurationKeys.ChannelCapasity + " input is invalid.")
+            .When(x => x[ConfigurationKeys.ChannelCapasity] != null);
     }
 }
