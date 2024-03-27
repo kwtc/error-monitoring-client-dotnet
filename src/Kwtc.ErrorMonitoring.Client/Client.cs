@@ -32,12 +32,17 @@ public class Client : IClient
         Guard.IsGreaterThan((int)severity, 1, nameof(severity));
 
         var errorEvent = new Event(exception, severity, this.applicationKey, isHandled);
-
         var client = this.httpClientFactory.CreateClient(this.httpClientName);
+        var content = JsonContent.Create(errorEvent);
 
-        var response = await client
-            .PostAsJsonAsync($"{this.endpointUri}/events", errorEvent, cancellationToken: cancellationToken);
-
-        return new ClientResponse((int)response.StatusCode, response.ReasonPhrase);
+        try
+        {
+            var response = await client.PostAsync($"{this.endpointUri}/events", content, cancellationToken);
+            return new ClientResponse((int)response.StatusCode, response.ReasonPhrase);
+        }
+        catch (System.Exception ex)
+        {
+            throw new ErrorMonitoringException(ex.Message, ex);
+        }
     }
 }

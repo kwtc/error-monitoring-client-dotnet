@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
+using Exception = System.Exception;
 using Severity = Kwtc.ErrorMonitoring.Client.Payload.Severity;
 
 namespace Kwtc.ErrorMonitoring.Client.Tests;
@@ -263,7 +264,6 @@ public class ClientTests
         // Act
         var act = () => this.GetSut(configuration);
 
-
         // Assert
         act.Should()
            .NotThrow();
@@ -328,11 +328,11 @@ public class ClientTests
             .Returns(new HttpClient());
 
         // Act
-        var response= await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+        var response = await this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
 
         // Assert
         this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
-        
+
         response.Should().NotBeNull();
     }
 

@@ -10,11 +10,6 @@ namespace Kwtc.ErrorMonitoring.Client.AspNetCore.Tests;
 public class ServiceCollectionExtensionTests
 {
     [Fact]
-    public void AddErrorMonitoring_InvalidInput_ShouldThrow()
-    {
-    }
-
-    [Fact]
     public void AddErrorMonitoring_ValidConfiguration_ShouldNotThrow()
     {
         // Arrange
