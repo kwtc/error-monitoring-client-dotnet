@@ -321,7 +321,7 @@ public class ClientTests
     }
 
     [Fact]
-    public async Task NotifyAsync_SeverityIsInvalid_ShouldCreateClientAndPost()
+    public async Task NotifyAsync_ConfigurationAndInputValid_ShouldCreateClientAndPostSuccessfully()
     {
         // Arrange
         var configuration = GetValidConfiguration();
@@ -341,6 +341,94 @@ public class ClientTests
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(200);
         response.Message.Should().Be("OK");
+    }
+
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsInvalidOperationException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<InvalidOperationException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is InvalidOperationException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsHttpRequestException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<HttpRequestException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is HttpRequestException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+    
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsTaskCanceledException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<TaskCanceledException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is TaskCanceledException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
+    }
+    
+    [Fact]
+    public async Task NotifyAsync_HttpClientThrowsUriFormatException_ShouldThrowErrorMonitoringException()
+    {
+        // Arrange
+        var configuration = GetValidConfiguration();
+        var httpMessageHandler = new Mock<HttpMessageHandler>();
+        httpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Throws<UriFormatException>();
+        this.httpClientFactoryMock.Setup(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!))
+            .Returns(new HttpClient(httpMessageHandler.Object));
+
+        // Act
+        var act = () => this.GetSut(configuration).NotifyAsync(new Exception(), Severity.Error);
+
+        // Assert
+        await act.Should().ThrowAsync<ErrorMonitoringException>().Where(e => e.InnerException is UriFormatException);
+
+        this.httpClientFactoryMock.Verify(x => x.CreateClient(configuration[ConfigurationKeys.HttpClientName]!), Times.Once);
     }
 
     private Client GetSut(IConfiguration configuration)
